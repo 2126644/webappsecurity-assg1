@@ -13,14 +13,14 @@ class ProfileController extends Controller
     /** shows the profile details */
     {
         $user = Auth::user(); //returns the currently logged-in user
-        return view('profile.show', compact('user'));
+        return redirect()->route('profile.edit')->with('success', 'Profile updated!');
     }
 
     public function edit()
     /** shows the profile details edit form */
     {
         $user = Auth::user();
-        return view('profile.edit', compact('user'));
+        return view('profile.editprofile', compact('user'));
     }
 
     public function update(Request $request)

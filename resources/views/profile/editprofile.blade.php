@@ -30,7 +30,7 @@
     <input type="file" name="avatar"><br>
 
     @if ($user->avatar)
-        <img src="{{ asset('storage/') . $user->avatar) }}" width="100">
+        <img src="{{ asset('storage/' . $user->avatar) }}" width="100">
     @endif
 
     <button type="submit" style="color:blue;">Update Profile</button>
