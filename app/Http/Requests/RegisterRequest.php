@@ -21,10 +21,10 @@ class RegisterRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
-        ];
+    return [
+        'name' => ['required', 'regex:/^[A-Za-z\s]+$/'],
+        'email' => ['required', 'email', 'unique:users,email', 'regex:/^[\w\.-]+@[\w\.-]+\.\w{2,4}$/'],
+        'password' => ['required', 'min:8', 'confirmed', 'regex:/^[A-Za-z0-9!@#$%^&*()_+=-]+$/'],
+    ];
     }
 }
