@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Http\Requests\RegisterRequest;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -63,32 +63,20 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \App\Models\User
      */
-    protected function create(array $data)
+    protected function create(array $data) 
     {
+        $salt = Str::random(16); // generate random alphanumeric salt
+    
         return User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => Hash::make($data['password']),
+            'salt' => $salt,
+            'password' => Hash::make($data['password'] . $salt), // append salt to password before hashing
         ]);
-    }
-
-    public function store(RegisterRequest $request)
-    {
-        // The request is automatically validated here
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        // Redirect or login...
-        return redirect()->route('home');
     }
 
     public function showRegistrationForm()
     {
         return view('auth.register');
     }
-
-
 }

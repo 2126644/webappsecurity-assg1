@@ -2,11 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\TodoController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\TwoFactorController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\TodoController;
+use App\Http\Controllers\ProfileController;
 
 // Home page
 Route::get('/', function () {
@@ -18,7 +20,14 @@ Auth::routes();
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
+Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Two-Factor Routes
+//Show 2FA challenge page
+Route::get('/two-factor-challenge', [TwoFactorController::class, 'index'])->name('two-factor.login');
+//Handle submitted code
+Route::post('/two-factor-challenge', [TwoFactorController::class, 'store'])->name('two-factor.store');
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
@@ -26,7 +35,7 @@ Route::post('/register', [RegisterController::class, 'register']);
 // Group routes that require auth
 Route::middleware(['auth'])->group(function() {
 
-// To-do routes
+// To-Do Routes
 Route::get('/todo', [TodoController::class, 'index'])->name('todo.index');
 Route::get('/todo/create', [TodoController::class, 'create'])->name('todo.create');
 Route::post('/todo', [TodoController::class, 'store'])->name('todo.store');
