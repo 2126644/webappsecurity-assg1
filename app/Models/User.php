@@ -26,6 +26,7 @@ class User extends Authenticatable
         'avatar', 
         'phone_no', 
         'city',
+        'role_id'
     ];
 
     /**
@@ -49,5 +50,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Each user belongs to one role.
+     */
+    public function roles()
+    {
+        return $this->belongsTo(UserRole::class, 'role_id', 'role_id');
     }
 }
