@@ -1,17 +1,73 @@
 @extends('layouts.app')
-
 @section('content')
 <div class="container">
-  <h1>To-Dos for {{ $user->name }}</h1>
-  <ul class="list-group">
-    @forelse($todos as $todo)
-      <li class="list-group-item">{{ $todo->title }}</li>
-    @empty
-      <li class="list-group-item">No to–dos found.</li>
-    @endforelse
-  </ul>
-  <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary mt-3">
-    ← Back to Users
-  </a>
+  <br>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <h2>To-Dos List for user {{ $user->name }}</h2>
+    </div>
+    
+    <br>
+    <div class="col-md-12">
+      @if (session('success'))
+      <div class="alert alert-success" role="alert">
+        {{ session('success') }}
+      </div>
+      @endif
+      @if (session('error'))
+      <div class="alert alert-danger" role="alert">
+        {{ session('error') }}
+      </div>
+      @endif
+      <table class="table table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th width="5%">
+              <center>Number</center></th>
+            <th>
+              <center>Task Name</center></th>
+            <th width="30%">
+              <center>Description</center>
+            </th>
+            <th width="10%">
+              <center>Task Status</center>
+            </th>
+            <th width="14%">
+              <center>Action</center>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @forelse($todos as $todo)
+          <tr>
+            <td class="text-center">{{ $loop->iteration }}</td>
+            <td class="text-center">{{ $todo->title }}</td>
+            <td class="text-center">{{ $todo->description }}</td>
+            <td class="text-center">{{ $todo->status }}</td>
+            <td class="text-center">
+              <a href="{{ route('todo.edit', $todo) }}"
+                class="btn btn-warning btn-sm">
+                Edit
+              </a>
+              <form action="{{ route('todo.destroy', $todo)}}" method="POST"
+                style="display:inline"
+                onsubmit="return confirm('Delete this task?');">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+          @empty
+          <tr>
+            <td colspan="4">
+              <center>No to-dos found for this user.</center>
+            </td>
+          </tr>
+          @endforelse
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
 @endsection
