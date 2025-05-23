@@ -10,7 +10,7 @@
       <li class="list-group-item">No to–dos found.</li>
     @endforelse
   </ul>
-  <a href="{{ route('admin.users.index') }}" class="btn btn-secondary mt-3">
+  <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary mt-3">
     ← Back to Users
   </a>
 </div>

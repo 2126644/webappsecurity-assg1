@@ -20,14 +20,8 @@ class AdminController extends Controller
     public function dashboard()
     {
         $this->ensureIsAdmin();
-        return view('admin.dashboard');
-    }
-
-    public function users()
-    {
-        $this->ensureIsAdmin();
         $users = User::all();
-        return view('admin.users.index', compact('users'));
+        return view('admin.dashboard', compact('users'));
     }
 
     public function toggleUser(User $user)
@@ -35,13 +29,20 @@ class AdminController extends Controller
         $this->ensureIsAdmin();
         $user->active = ! $user->active;
         $user->save();
-        return redirect()->route('admin.users.index');
+        return back();
     }
 
     public function userTodos(User $user)
     {
         $this->ensureIsAdmin();
-        $todos = $user->todos; 
-        return view('admin.users.todos', compact('user','todos'));
+        $todos = $user->todos;
+        return view('admin.todos', compact('user', 'todos'));
+    }
+
+    public function destroyUser(User $user)
+    {
+        $this->ensureIsAdmin();
+        $user->delete();
+        return back()->with('status', 'User deleted.');
     }
 }

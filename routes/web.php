@@ -33,26 +33,28 @@ Route::post('/two-factor-challenge', [TwoFactorController::class, 'store'])->nam
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
-Route::prefix('admin')->name('admin.')->middleware('auth')->group(function(){
-Route::get('admin/dashboard', [AdminController::class,'dashboard'])->name('dashboard');
-Route::get('users', [AdminController::class,'users'])->name('users.index');
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    Route::get('dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::patch('users/{user}/toggle', [AdminController::class, 'toggleUser'])->name('users.toggle');
+    Route::get('users/{user}/todos', [AdminController::class, 'userTodos'])->name('todos');
+    Route::delete('users/{user}', [AdminController::class, 'destroyUser'])->name('users.destroy');
 });
 
 // Group routes that require auth
-Route::middleware(['auth'])->group(function() {
+Route::middleware(['auth'])->group(function () {
 
-// To-Do Routes
-Route::get('/todo', [TodoController::class, 'index'])->name('todo.index');
-Route::get('/todo/create', [TodoController::class, 'create'])->name('todo.create');
-Route::post('/todo', [TodoController::class, 'store'])->name('todo.store');
-Route::delete('/todo/{todo}', [TodoController::class, 'destroy'])->name('todo.show');
-Route::get('/todo/{todo}/edit', [TodoController::class, 'edit'])->name('todo.edit');
-Route::put('/todo/{todo}', [TodoController::class, 'update'])->name('todo.update');
-Route::delete('/todo/{todo}', [TodoController::class, 'destroy'])->name('todo.destroy');
+    // To-Do Routes
+    Route::get('/todo', [TodoController::class, 'index'])->name('todo.index');
+    Route::get('/todo/create', [TodoController::class, 'create'])->name('todo.create');
+    Route::post('/todo', [TodoController::class, 'store'])->name('todo.store');
+    Route::delete('/todo/{todo}', [TodoController::class, 'destroy'])->name('todo.show');
+    Route::get('/todo/{todo}/edit', [TodoController::class, 'edit'])->name('todo.edit');
+    Route::put('/todo/{todo}', [TodoController::class, 'update'])->name('todo.update');
+    Route::delete('/todo/{todo}', [TodoController::class, 'destroy'])->name('todo.destroy');
 
-// Profile Routes
-Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Profile Routes
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
