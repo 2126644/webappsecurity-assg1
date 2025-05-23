@@ -6,11 +6,6 @@
         <div class="col-md-6">
             <h2>Edit Todo</h2>
         </div>
-        <div class="col-md-6">
-            <div class="float-right">
-                <a href="{{ route('todo.index') }}" class="btn btn-primary">Back</a>
-            </div>
-        </div>
         <br>
         <div class="col-md-12">
             @if (session('success'))

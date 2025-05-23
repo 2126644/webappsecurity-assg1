@@ -12,6 +12,14 @@ class TodoController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+
+        // block inactive accounts
+        $this->middleware(function($request, $next) {
+            if (! Auth::user()->status) {
+                abort(403, 'Your account has been deactivated.');
+            }
+            return $next($request);
+        });
     }
     /**
      * Display a listing of the resource.

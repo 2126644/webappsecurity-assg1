@@ -27,7 +27,7 @@ class AdminController extends Controller
     public function toggleUser(User $user)
     {
         $this->ensureIsAdmin();
-        $user->active = ! $user->active;
+        $user->status = ! $user->status;
         $user->save();
         return back();
     }
