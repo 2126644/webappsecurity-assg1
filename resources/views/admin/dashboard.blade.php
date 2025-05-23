@@ -24,7 +24,7 @@
         <tr>
           <td>{{ $i+1 }}</td>
           <td>
-            <a href="{{ route('admin.users.todos', $u) }}">
+            <a href="{{ route('admin.todos', $u) }}">
               {{ $u->name }}
             </a>
           </td>

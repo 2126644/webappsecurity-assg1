@@ -13,7 +13,17 @@ use App\Http\Controllers\AdminController;
 
 // Home page
 Route::get('/', function () {
-    return view('welcome');
+    // If the user is already logged in…
+    if (Auth::check()) {
+        // Send admins to their dashboard…
+        if (Auth::user()->role_id === 1) {
+            return redirect()->route('admin.dashboard');
+        }
+        // …and students to /todo
+        return redirect()->route('todo.index');
+    }
+    // Otherwise send guests to login
+    return redirect()->route('login');
 });
 
 // Auth routes (login, registration, logout)
