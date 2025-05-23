@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Session;
 
 class TodoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      */
@@ -67,13 +71,25 @@ class TodoController extends Controller
      */
     public function edit($id)
     {
-        $userId = Auth::user()->id;
-        $todo = Todo::where(['user_id' => $userId, 'id' => $id])->first();
-        if ($todo) {
-            return view('todo.edit', ['todo' => $todo]);
-        } else {
-            return redirect('todo')->with('error', 'Todo not found');
+        // Admins get any todo; others only their own
+        $todo = Auth::user()->role_id === 1
+              ? Todo::find($id)
+              : Todo::where('user_id', Auth::id())
+                    ->where('id', $id)
+                    ->first();
+
+        if (! $todo) {
+            abort(403, 'Unauthorized or not found.');
         }
+
+        return view('todo.edit', compact('todo'));
+        // $userId = Auth::user()->id;
+        // $todo = Todo::where(['user_id' => $userId, 'id' => $id])->first();
+        // if ($todo) {
+        //     return view('todo.edit', ['todo' => $todo]);
+        // } else {
+        //     return redirect('todo')->with('error', 'Todo not found');
+        // }
     }
     /**
      * Update the specified resource in storage.
@@ -84,19 +100,45 @@ class TodoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $userId = Auth::user()->id;
-        $todo = Todo::find($id);
-        if (!$todo) {
-            return redirect('todo')->with('error', 'Todo not found.');
+        // Same fetch logic
+        $todo = Auth::user()->role_id === 1
+              ? Todo::find($id)
+              : Todo::where('user_id', Auth::id())
+                    ->where('id', $id)
+                    ->first();
+
+        if (! $todo) {
+            abort(403, 'Unauthorized or not found.');
         }
-        $input = $request->input();
-        $input['user_id'] = $userId;
-        $todoStatus = $todo->update($input);
-        if ($todoStatus) {
-            return redirect('todo')->with('success', 'Todo successfully updated.');
-        } else {
-            return redirect('todo')->with('error', 'Oops something went wrong. Todo not updated');
+
+        $data = $request->validate([
+            'title'       => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status'      => 'required|in:pending,completed',
+        ]);
+
+        $todo->update($data);
+
+        // Redirect back to the right place:
+        if (Auth::user()->role_id === 1) {
+            // passing $todo->user_id
+            return redirect()
+                   ->route('admin.todos', $todo->user_id)
+                   ->with('success','To-Do updated.');
         }
+
+        // Otherwise student redirect to their own list
+        return redirect()->route('todo.index')
+                         ->with('success','To-Do updated.');
+
+        // $input = $request->input();
+        // $input['user_id'] = $userId;
+        // $todoStatus = $todo->update($input);
+        // if ($todoStatus) {
+        //     return redirect('todo')->with('success', 'Todo successfully updated.');
+        // } else {
+        //     return redirect('todo')->with('error', 'Oops something went wrong. Todo not updated');
+        // }
     }
 
     /**
@@ -104,21 +146,37 @@ class TodoController extends Controller
      */
     public function destroy($id)
     {
-        $userId = Auth::user()->id;
-        $todo = Todo::where(['user_id' => $userId, 'id' => $id])->first();
-        $respStatus = $respMsg = '';
-        if (!$todo) {
-            $respStatus = 'error';
-            $respMsg = 'Todo not found';
+        // Same fetch logic again
+        $todo = Auth::user()->role_id === 1
+              ? Todo::find($id)
+              : Todo::where('user_id', Auth::id())
+                    ->where('id', $id)
+                    ->first();
+
+        if (! $todo) {
+            abort(403, 'Unauthorized or not found.');
         }
-        $todoDelStatus = $todo->delete();
-        if ($todoDelStatus) {
-            $respStatus = 'success';
-            $respMsg = 'Todo deleted successfully';
-        } else {
-            $respStatus = 'error';
-            $respMsg = 'Oops something went wrong. Todo not deleted successfully';
+
+        $todo->delete();
+
+        // Redirect back
+        if (Auth::user()->role_id === 1) {
+            return redirect()
+                   ->route('admin.todos', $todo->user_id)
+                   ->with('success','To-Do deleted.');
         }
-        return redirect('todo')->with($respStatus, $respMsg);
+
+                return redirect()->route('todo.index')
+                         ->with('success','To-Do deleted.');
     }
+
+        // $todoDelStatus = $todo->delete();
+        // if ($todoDelStatus) {
+        //     $respStatus = 'success';
+        //     $respMsg = 'Todo deleted successfully';
+        // } else {
+        //     $respStatus = 'error';
+        //     $respMsg = 'Oops something went wrong. Todo not deleted successfully';
+        // }
+        // return redirect('todo')->with($respStatus, $respMsg);
 }
