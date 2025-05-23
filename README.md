@@ -34,12 +34,12 @@ This is a simple Laravel-based To-Do application with:
 
 4. **To-Do Management**
 
-   * Students can create, view, edit, and **(for Admins only)** delete their own tasks.
+   * Students can create, view, edit, and **delete (for Admins only)** their tasks.
    * Admins can view, edit, and delete any user’s tasks.
 
 5. **Account Lockout**
 
-   * Deactivated (if status = false) users cannot access their to-dos page (homepage).
+   * Deactivated (if `status = false`) users cannot access their to-dos page (homepage).
 
 ---
 
@@ -94,7 +94,7 @@ This is a simple Laravel-based To-Do application with:
 ### Landing
 
 * Guests are redirected to the login page.
-* After login and 2FA, Students go to '/todo', Admins to '/admin/dashboar'`.
+* After login and 2FA, Students go to `/todo`, Admins to `/admin/dashboard`.
 
 ### Registration & Login
 
@@ -108,7 +108,7 @@ This is a simple Laravel-based To-Do application with:
 
 ### Admin Dashboard
 
-* URL: '/admin/dashboard'
+* URL: `/admin/dashboard`
 * List users, toggle `status` switch, delete users.
 * Click a username to view/manage that user’s to-dos.
 
@@ -121,7 +121,7 @@ This is a simple Laravel-based To-Do application with:
 
 * **Students** (role\_id=2):
 
-  * List: `/todo` (auto-reindexed rows)
+  * List: `/todo`
   * Create: `/todo/create`
   * Edit: `/todo/{todo}/edit`
   * Delete: (*Admins only*)
@@ -136,9 +136,9 @@ This is a simple Laravel-based To-Do application with:
 
 ## Models & Migrations
 
-* **users table**: `id`, `name`, `email`, `salt`, `password`, `role_id`, `status` (boolean), nickname, avatar, phone_no, city Timestamps.
+* **users table**: `id`, `name`, `email`, `salt`, `password`, `role_id`, `status` (boolean), `nickname`, `avatar`, `dphone_no`, `city`, Timestamps.
 * **todos table**: `id`, `user_id`, `title`, `description`, `status` (pending/completed), Timestamps.
-* **user_roles table**: `role_id`, `role_name`, 'description', Timestamps.
+* **user_roles table**: `role_id`, `role_name`, `description`, Timestamps.
 
 ---
 
