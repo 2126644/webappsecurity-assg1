@@ -9,6 +9,7 @@ use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\TodoController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AdminController;
 
 // Home page
 Route::get('/', function () {
@@ -31,6 +32,11 @@ Route::post('/two-factor-challenge', [TwoFactorController::class, 'store'])->nam
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
+
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function(){
+Route::get('admin/dashboard', [AdminController::class,'dashboard'])->name('dashboard');
+Route::get('users', [AdminController::class,'users'])->name('users.index');
+});
 
 // Group routes that require auth
 Route::middleware(['auth'])->group(function() {

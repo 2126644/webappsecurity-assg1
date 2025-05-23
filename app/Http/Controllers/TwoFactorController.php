@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class TwoFactorController extends Controller
 {
     //Display the 2FA code input form
-    public function index() 
+    public function index()
     {
         //User logged out and directed to 
         return view('auth.two-factor-challenge');
@@ -23,42 +23,46 @@ class TwoFactorController extends Controller
         $request->validate([
             'two_factor_code' => ['required', 'digits:6'],
         ]);
-    
-    //Identify user from session (only accepts user stored in session)
-    //User must already be partially verified
-    $userId = $request->session()->get('login.id');
-    
-    if(!$userId) 
-    {
-        return redirect()->route('login')->withErrors(['email' => 'Your session has expired. Please login again.']);
-    }
 
-    $user = User::find($userId);
+        //Identify user from session (only accepts user stored in session)
+        //User must already be partially verified
+        $userId = $request->session()->get('login.id');
 
-    if($user->two_factor_code !== $request->two_factor_code)
-    {
-        return back()->withErrors(['two_factor_code' => 'The code is incorrect.']);
-    }
+        if (!$userId) {
+            return redirect()->route('login')->withErrors(['email' => 'Your session has expired. Please login again.']);
+        }
 
-    if(Carbon::now()->greaterThan($user->two_factor_expires_at)) 
-    {
-        return back()->withErrors(['two_factor_code' => 'The code has expired.']);
-    }
+        $user = User::find($userId);
 
-    //If valid; 
-    
-    //Clear used 2FA code in database
-    $user->two_factor_code = null;
-    $user->two_factor_expires_at = null;
-    $user->save();
+        if ($user->two_factor_code !== $request->two_factor_code) {
+            return back()->withErrors(['two_factor_code' => 'The code is incorrect.']);
+        }
 
-    //Logs user in
-    Auth::login($user);
+        if (Carbon::now()->greaterThan($user->two_factor_expires_at)) {
+            return back()->withErrors(['two_factor_code' => 'The code has expired.']);
+        }
 
-    //Cleans login.id after successful login
-    $request->session()->forget('login.id');
+        //If valid; 
 
-    //Redirects to intended page
-    return redirect()->intended(config('fortify.home'));
+        //Clear used 2FA code in database
+        $user->two_factor_code = null;
+        $user->two_factor_expires_at = null;
+        $user->save();
+
+        //Logs user in
+        Auth::login($user);
+
+        //Cleans login.id after successful login
+        $request->session()->forget('login.id');
+        $request->session()->regenerate();
+
+        // 7) Finally, send them where they belong
+        if (Auth::user()->role_id === 1) {
+            // Admin
+            return redirect()->route('admin.dashboard');
+        }
+
+        // Student (or any non-admin)
+        return redirect()->intended('/todo');
     }
 }
