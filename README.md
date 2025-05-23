@@ -21,7 +21,7 @@ This is a simple Laravel-based To-Do application with:
 
 2. **Roles & Permissions**
 
-   * Two roles: **Admin** (role_id = 1) and **Student** (role_id = 2).
+   * Two roles: **Admin** (`role_id = 1`) and **Student** (`role_id = 2`).
    * By default, new users are assigned the Student role.
    * Admins can view all users and their to-dos, activate/deactivate account, and delete users; meanwhile students cannot.
 
@@ -139,6 +139,7 @@ This is a simple Laravel-based To-Do application with:
 * **users table**: `id`, `name`, `email`, `salt`, `password`, `role_id`, `status` (boolean), `nickname`, `avatar`, `dphone_no`, `city`, Timestamps.
 * **todos table**: `id`, `user_id`, `title`, `description`, `status` (pending/completed), Timestamps.
 * **user_roles table**: `role_id`, `role_name`, `description`, Timestamps.
+* **role_permissions table**: `permission_id`, `role_id`, `description`, Timestamps.
 
 ---
 
