@@ -1,9 +1,10 @@
-1. Implement Content Security Policy (CSP) in Laravel
+Web Application Security - Assignment 4
 
-CSP helps prevent injection attacks by restricting resources the browser can load.
+Task 1: Implement Content Security Policy (CSP)
 
-* Use a Laravel Middleware Package
-  You can use a package like [spatie/laravel-csp](https://github.com/spatie/laravel-csp):
+Laravel official docs don’t provide built-in native CSP middleware out of the box yet. Instead, Laravel recommends using middleware or third-party packages to implement CSP headers. The package spatie/laravel-csp is the community standard approach and is widely accepted.
+ 
+* Install Spatie: [spatie/laravel-csp](https://github.com/spatie/laravel-csp):
 
 ```bash
 composer require spatie/laravel-csp
@@ -15,18 +16,22 @@ composer require spatie/laravel-csp
 php artisan vendor:publish --provider="Spatie\Csp\CspServiceProvider"
 ```
 
-* Add the middleware in `app/Http/Kernel.php` (for web routes):
+* Add the middleware in `app/Http/Kernel.php`:
 
 ```php
-protected $middlewareGroups = [
-    'web' => [
-        // other middlewares ...
-        \Spatie\Csp\AddCspHeaders::class,
-    ],
-];
+use Spatie\Csp\AddCspHeaders;
+
+class Kernel extends HttpKernel
+{
+    protected $middlewareGroups = [
+        'web' => [
+            AddCspHeaders::class,
+            // ...
+        ],
+    ];
 ```
 
-* Configure CSP policies in `config/csp.php`, example:
+* Configure CSP policies in `config/csp.php`:
 
 ```php
 return [
@@ -37,51 +42,38 @@ return [
 ];
 ```
 
-* For a custom policy, create `app/Csp/CustomPolicy.php`:
+* Create `app/Csp/CustomPolicy.php`:
 
 ```php
-<?php
-
-namespace App\Csp;
-
-use Spatie\Csp\Policies\Policy;
-
 class CustomPolicy extends Policy
 {
     public function configure()
     {
         $this->addDirective('default-src', ['\'self\''])
              ->addDirective('script-src', ['\'self\''])
-             ->addDirective('style-src', ['\'self\'', 'fonts.googleapis.com'])
-             ->addDirective('font-src', ['fonts.gstatic.com'])
+             ->addDirective('style-src', ['\'self\'', 'fonts.bunny.net'])
+             ->addDirective('font-src', ['fonts.bunny.net'])
              ->addDirective('img-src', ['\'self\'', 'data:']);
     }
 }
 ```
 
-This restricts all sources to the same origin except styles and fonts from Google Fonts and images from the same origin or inline data.
+This restricts all sources to the same origin except styles and fonts from `fonts.bunny.net`.
 
 ---
 
-2. Implement XSS Defense in Laravel
+Task 2: Implement XSS Defense
 
-Laravel automatically escapes output in Blade templates by default when you use `{{ $variable }}` instead of `{!! $variable !!}`.
+Laravel’s Blade automatically escapes output with {{ }}, as documented here:
+(https://laravel.com/docs/blade#displaying-data)[https://laravel.com/docs/blade#displaying-data]
 
-* Escape output in Blade views
-  Use `{{ $variable }}` for output — this escapes HTML special characters.
+* Always use `{{ $variable }}` for output — this escapes HTML special characters, instead of `{!! $variable !!}`.
 
-* Avoid `{!! $variable !!}` unless safe
-  Only use unescaped output if you trust the content (e.g., sanitized or trusted HTML).
+Task 3: Implement CSRF Defense
 
----
+Laravel has built-in CSRF protection middleware enabled by default on all web routes and the @csrf Blade directive for forms, documented here: (https://laravel.com/docs/csrf)[https://laravel.com/docs/csrf] 
 
-3. Implement CSRF Defense in Laravel
-
-Laravel has built-in CSRF protection middleware enabled by default on all web routes.
-
-
-* Include CSRF token in all forms
-  In Blade forms, always include:
+* Include CSRF token in all Blade forms
 
 ```blade
 <form method="POST" action="/todos">
@@ -90,24 +82,25 @@ Laravel has built-in CSRF protection middleware enabled by default on all web ro
 </form>
 ```
 
-The `@csrf` directive outputs a hidden input with the CSRF token.
-
-And add in your HTML head:
+* Add in HTML head:
 
 ```blade
 <meta name="csrf-token" content="{{ csrf_token() }}">
 ```
 
-* Verify the CSRF middleware is enabled
-  Check `app/Http/Kernel.php` for:
+* Verify the CSRF middleware is enabled in `app/Http/Kernel.php`:
 
 ```php
-protected $middlewareGroups = [
-    'web' => [
-        \App\Http\Middleware\VerifyCsrfToken::class,
-        // ...
-    ],
-];
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+
+class Kernel extends HttpKernel
+{
+    protected $middlewareGroups = [
+        'web' => [
+            VerifyCsrfToken::class,
+            // ...
+        ],
+    ];
 ```
 
 
