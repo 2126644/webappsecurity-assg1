@@ -60,18 +60,16 @@ class CustomPolicy extends Policy
 
 This restricts all sources to the same origin except styles and fonts from `fonts.bunny.net`.
 
----
-
 Task 2: Implement XSS Defense
 
 Laravel’s Blade automatically escapes output with {{ }}, as documented here:
-(https://laravel.com/docs/blade#displaying-data)[https://laravel.com/docs/blade#displaying-data]
+[https://laravel.com/docs/blade#displaying-data](https://laravel.com/docs/blade#displaying-data)
 
 * Always use `{{ $variable }}` for output — this escapes HTML special characters, instead of `{!! $variable !!}`.
 
 Task 3: Implement CSRF Defense
 
-Laravel has built-in CSRF protection middleware enabled by default on all web routes and the @csrf Blade directive for forms, documented here: (https://laravel.com/docs/csrf)[https://laravel.com/docs/csrf] 
+Laravel has built-in CSRF protection middleware enabled by default on all web routes and the @csrf Blade directive for forms, documented here: [https://laravel.com/docs/csrf](https://laravel.com/docs/csrf) 
 
 * Include CSRF token in all Blade forms
 
