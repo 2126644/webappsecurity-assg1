@@ -1,8 +1,6 @@
 Web Application Security - Assignment 3
 
----
-
-Task 1: Create a new table called UserRoles to identify the user roles
+Task 1: Create a new table called UserRoles to identify the user roles    
 Task 2: Create a new table called RolePermissions to identify what the user can do (CRUD)
 
 Database tables:
@@ -11,10 +9,7 @@ Database tables:
 * user_roles table: `role_id`, `role_name`, `description`, Timestamps
 * role_permissions table: `permission_id`, `role_id`, `description`, Timestamps
 
----
-
 Task 3: Implement Role-Based Access Control (RBAC) to redirect registered Users to the user page and Administrator to administration page
-
 * Two roles: Admin (`role_id = 1`) and User (`role_id = 2`).
 * By default, new users are assigned the User role.
 
